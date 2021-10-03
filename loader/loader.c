@@ -2852,6 +2852,17 @@ static VkResult read_data_files_in_search_paths(const struct loader_instance *in
 #if defined(_WIN32)
     char *package_path = NULL;
 #else
+
+#if defined(__HAIKU__)
+    char *xdg_config_home = NULL;
+    char *xdg_config_dirs = NULL;
+    char *xdg_data_home = NULL;
+    char *xdg_data_dirs =
+        "/boot/home/config/non-packaged/add-ons:"
+        "/boot/home/config/add-ons:"
+        "/boot/system/non-packaged/add-ons:"
+        "/boot/system/add-ons";
+#else
     // Determine how much space is needed to generate the full search path
     // for the current manifest files.
     char *xdg_config_home = loader_secure_getenv("XDG_CONFIG_HOME", inst);
@@ -2870,6 +2881,8 @@ static VkResult read_data_files_in_search_paths(const struct loader_instance *in
     if (NULL == xdg_data_dirs || '\0' == xdg_data_dirs[0]) {
         xdg_data_dirs = FALLBACK_DATA_DIRS;
     }
+#endif
+
 #endif
 
     char *home = NULL;

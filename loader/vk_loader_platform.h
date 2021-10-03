@@ -44,7 +44,7 @@
 #endif  // defined(__Fuchsia__)
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__Fuchsia__) || defined(__QNXNTO__) || defined(__FreeBSD__) || \
-    defined(__OpenBSD__)
+    defined(__OpenBSD__) || defined(__HAIKU__)
 #include <unistd.h>
 // Note: The following file is for dynamic loading:
 #include <dlfcn.h>
@@ -111,7 +111,7 @@
 #define ENABLED_LAYERS_ENV "VK_INSTANCE_LAYERS"
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__Fuchsia__) || defined(__QNXNTO__) || defined(__FreeBSD__) || \
-    defined(__OpenBSD__)
+    defined(__OpenBSD__) || defined(__HAIKU__)
 /* Linux-specific common code: */
 
 // VK Library Filenames, Paths, etc.:
@@ -233,7 +233,7 @@ static inline void loader_platform_thread_once_fn(pthread_once_t *ctl, void (*fu
 #endif
 
 #if defined(__linux__) || defined(__APPLE__) || defined(__Fuchsia__) || defined(__QNXNTO__) || defined(__FreeBSD__) || \
-    defined(__OpenBSD__)
+    defined(__OpenBSD__) || defined(__HAIKU__)
 
 // File IO
 static inline bool loader_platform_file_exists(const char *path) {
@@ -294,7 +294,7 @@ static inline char *loader_platform_executable_path(char *buffer, size_t size) {
 
     return buffer;
 }
-#elif defined(__Fuchsia__) || defined(__OpenBSD__)
+#elif defined(__Fuchsia__) || defined(__OpenBSD__) || defined(__HAIKU__)
 static inline char *loader_platform_executable_path(char *buffer, size_t size) { return NULL; }
 #elif defined(__QNXNTO__)
 
