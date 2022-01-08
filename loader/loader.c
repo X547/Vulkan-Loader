@@ -44,6 +44,11 @@
 #include <sys/param.h>
 #endif
 
+#if defined(__HAIKU__)
+#include <FindDirectory.h>
+#include <Architecture.h>
+#endif
+
 #include <sys/types.h>
 #if defined(_WIN32)
 #include "dirent_on_windows.h"
@@ -3144,6 +3149,9 @@ VkResult read_data_files_in_search_paths(const struct loader_instance *inst, enu
 
 #if defined(_WIN32)
     char *package_path = NULL;
+#elif defined(__HAIKU__)
+    char** directories = NULL;
+    size_t directory_count = 0;
 #elif COMMON_UNIX_PLATFORMS
     // Determine how much space is needed to generate the full search path
     // for the current manifest files.
@@ -3282,6 +3290,15 @@ VkResult read_data_files_in_search_paths(const struct loader_instance *inst, enu
         if (search_path_size == 2) {
             goto out;
         }
+#elif defined(__HAIKU__)
+        }
+        if (find_paths_etc(get_architecture(), B_FIND_PATH_ADD_ONS_DIRECTORY, relative_location, 0, &directories, &directory_count) != B_OK) {
+            vk_result = VK_ERROR_OUT_OF_HOST_MEMORY;
+            goto out;
+        }
+        for (size_t i = 0; i < directory_count; i++) {
+            search_path_size += strlen(directories[i]) + 1;
+        }
 #elif COMMON_UNIX_PLATFORMS
         }
 
@@ -3337,6 +3354,10 @@ VkResult read_data_files_in_search_paths(const struct loader_instance *inst, enu
 #if defined(_WIN32)
         if (NULL != package_path) {
             copy_data_file_info(package_path, NULL, 0, &cur_path_ptr);
+        }
+#elif defined(__HAIKU__)
+        for (size_t i = 0; i < directory_count; i++) {
+            copy_data_file_info(directories[i], NULL, 0, &cur_path_ptr);
         }
 #elif COMMON_UNIX_PLATFORMS
         if (rel_size > 0) {
@@ -3475,6 +3496,8 @@ out:
     loader_free_getenv(override_env, inst);
 #if defined(_WIN32)
     loader_instance_heap_free(inst, package_path);
+#elif defined(__HAIKU__)
+    free(directories);
 #elif COMMON_UNIX_PLATFORMS
     loader_free_getenv(xdg_config_home, inst);
     loader_free_getenv(xdg_config_dirs, inst);

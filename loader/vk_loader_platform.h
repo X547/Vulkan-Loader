@@ -26,7 +26,7 @@
  */
 #pragma once
 
-#if defined(__FreeBSD__) || defined(__OpenBSD__)
+#if defined(__FreeBSD__) || defined(__OpenBSD__)|| defined(__HAIKU__)
 #include <sys/types.h>
 #include <sys/select.h>
 #endif
@@ -44,7 +44,7 @@
 
 // Set of platforms with a common set of functionality which is queried throughout the program
 #if defined(__linux__) || defined(__APPLE__) || defined(__Fuchsia__) || defined(__QNX__) || defined(__FreeBSD__) || \
-    defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__GNU__)
+    defined(__OpenBSD__) || defined(__NetBSD__) || defined(__DragonFly__) || defined(__GNU__) || defined(__HAIKU__)
 #define COMMON_UNIX_PLATFORMS 1
 #else
 #define COMMON_UNIX_PLATFORMS 0
@@ -353,7 +353,7 @@ static inline char *loader_platform_executable_path(char *buffer, size_t size) {
 
     return buffer;
 }
-#elif defined(__Fuchsia__) || defined(__OpenBSD__)
+#elif defined(__Fuchsia__) || defined(__OpenBSD__) || defined(__HAIKU__)
 static inline char *loader_platform_executable_path(char *buffer, size_t size) { return NULL; }
 #elif defined(__QNX__)
 
